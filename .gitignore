@@ -1,0 +1,12 @@
+# File: .gitignore
+node_modules
+dist
+coverage
+*.log
+*.tsbuildinfo
+.DS_Store
+
+# secrets: never commit these
+.env
+.env.*
+!.env.example

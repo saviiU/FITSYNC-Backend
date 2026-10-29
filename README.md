@@ -16,7 +16,7 @@ Gym Management System API for Elite Fight Club (NestJS + PostgreSQL).
 - Never commit `.env` or any keys.
 
 ## Module owners
-- Auth, users, admin accounts: <name>
-- Availability, booking: <name>
-- Payments, refunds, earnings: <name>
-- Notifications, reviews, notes, reports: <name>
+- Authentication, JWT, roles, shared setup: Saajidh Ahamed
+- Booking & calendar: Savindu Udhesh
+- Trainers & client progress: Thisarani
+- Admin, payments, notifications: Pasan

@@ -1,32 +1,28 @@
-import { 
-    Controller,
-    Get,
-    Post,
-    Body,
-    Param,
-    ParseIntPipe,
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { TrainersService } from './trainers.service';
+import { CreateTrainerProfileDto } from './dto/create-trainer-profile.dto';
+import { SearchTrainersDto } from './dto/search-trainers.dto';
 
- } from '@nestjs/common';
-
- import { TrainersService } from './trainers.service';
- import { TrainerProfile } from './trainer-profile.entity';
-
+@ApiTags('trainers')
 @Controller('trainers')
 export class TrainersController {
-    constructor(private readonly trainersService: TrainersService) {}
+  constructor(private readonly trainersService: TrainersService) {}
 
-    @Post()
-    create(@Body() data: Partial<TrainerProfile>) {
-        return this.trainersService.create(data);
-    }
+  // TEMP: userId comes from the query until Saajidh's JWT auth is merged,
+  // then replace with the logged-in user's id.
+  @Post()
+  create(@Query('userId') userId: string, @Body() dto: CreateTrainerProfileDto) {
+    return this.trainersService.create(userId, dto);
+  }
 
-    @Get()
-    findAll() {
-        return this.trainersService.findAll();
-    }
+  @Get()
+  search(@Query() query: SearchTrainersDto) {
+    return this.trainersService.search(query);
+  }
 
-    @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.trainersService.findOne(id);
-    }
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.trainersService.findOne(id);
+  }
 }

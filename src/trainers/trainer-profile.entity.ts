@@ -44,6 +44,13 @@ export class TrainerProfile {
     @Column({ default: false })
     isVerified: boolean;
 
+    @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
+    averageRating: number;
+
+    @Column({ type: 'int', default: 0 })
+    reviewCount: number;
+
+
     @CreateDateColumn()
     createdAt: Date;
 

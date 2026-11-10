@@ -1,9 +1,11 @@
+import { TrainersModule } from './trainers/trainers.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { SessionNotesModule } from './session-notes/session-notes.module';
 
 @Module({
   imports: [
@@ -23,7 +25,9 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     UsersModule,
-    // Each owner adds their module here, e.g. AuthModule, BookingModule
+    TrainersModule,
+    SessionNotesModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

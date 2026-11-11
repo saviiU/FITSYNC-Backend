@@ -1,8 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TrainerProfile } from './trainer-profile.entity';
 import { CreateTrainerProfileDto } from './dto/create-trainer-profile.dto';
+import { UpdateTrainerProfileDto } from './dto/update-trainer-profile.dto';
 import { SearchTrainersDto } from './dto/search-trainers.dto';
 
 @Injectable()
@@ -48,5 +54,15 @@ export class TrainersService {
     const profile = await this.repo.findOne({ where: { id, isVerified: true } });
     if (!profile) throw new NotFoundException('Trainer not found');
     return profile;
+  }
+
+  async update(id: number, userId: string, dto: UpdateTrainerProfileDto) {
+    const profile = await this.repo.findOne({ where: { id } });
+    if (!profile) throw new NotFoundException('Trainer not found');
+    if (profile.userId !== userId) {
+      throw new ForbiddenException('You can only edit your own profile');
+    }
+    Object.assign(profile, dto);
+    return this.repo.save(profile);
   }
 }

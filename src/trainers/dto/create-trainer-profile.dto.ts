@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, IsUrl, Min } from 'class-validator';
 
 export class CreateTrainerProfileDto {
   @ApiProperty() @IsString() specialization: string;
@@ -8,4 +8,5 @@ export class CreateTrainerProfileDto {
   @ApiPropertyOptional() @IsOptional() @IsString() certification?: string;
   @ApiProperty() @IsNumber() @Min(0) sessionFee: number;
   @ApiProperty() @IsString() location: string;
+  @ApiPropertyOptional() @IsOptional() @IsUrl({ require_tld: false }) photoUrl?: string;
 }

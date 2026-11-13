@@ -6,6 +6,7 @@ import { CreateSessionNoteDto } from "./dto/create-session-note.dto";
 import { UpdateSessionNoteDto } from "./dto/update-session-note.dto";
 
 const EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class SessionNotesService {
@@ -42,5 +43,52 @@ export class SessionNotesService {
       .getMany();
   
   }
+
+   async findClientsByTrainer(trainerId: string) {
+    const notes = await this.repo
+      .createQueryBuilder('n')
+      .leftJoin('n.client', 'c')
+      .addSelect(['c.id', 'c.name'])
+      .where('n.trainerId = :trainerId', { trainerId })
+      .orderBy('n.createdAt', 'DESC')
+      .getMany();
+
+    const byClient = new Map<string, SessionNote[]>();
+    for (const n of notes) {
+      const list = byClient.get(n.clientId) ?? [];
+      list.push(n);
+      byClient.set(n.clientId, list);
+    }
+
+    const thisWeek = Math.floor(Date.now() / WEEK_MS);
+
+    return Array.from(byClient.values()).map((list) => {
+      const latest = list[0];
+      const weeks = new Set(list.map((n) => Math.floor(n.createdAt.getTime() / WEEK_MS)));
+
+      let streakWeeks = 0;
+      let w = weeks.has(thisWeek) ? thisWeek : thisWeek - 1;
+      while (weeks.has(w)) {
+        streakWeeks++;
+        w--;
+      }
+
+      let activeWeeks = 0;
+      for (let i = 0; i < 4; i++) if (weeks.has(thisWeek - i)) activeWeeks++;
+
+      return {
+        client: latest.client,
+        sessionsDone: list.length,
+        streakWeeks,
+        consistencyPercent: activeWeeks * 25,
+        latestSession: {
+          title: latest.title,
+          notes: latest.notes,
+          isPersonalRecord: latest.isPersonalRecord,
+          createdAt: latest.createdAt,
+        },
+      };
+    });
+  } 
 
 }

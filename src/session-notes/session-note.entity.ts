@@ -36,6 +36,15 @@ export class SessionNote {
     @Column({ type: 'jsonb', nullable: true })
     metrics: Record<string, number>;
 
+    @Column({ type: 'varchar', default: 'Training session' })
+    title: string;
+
+    @Column({ type: 'int', nullable: true })
+    durationMin: number;
+
+    @Column({ default: false })
+    isPersonalRecord: boolean;
+
     @CreateDateColumn()
     createdAt: Date;
 

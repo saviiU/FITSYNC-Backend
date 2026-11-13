@@ -32,11 +32,15 @@ export class SessionNotesService {
     return this.repo.save(note);
   }
 
-  findByClient(clientId: string) {
-    return this.repo.find({
-      where: { clientId },
-      order: { createdAt: 'DESC' },
-    });
+    findByClient(clientId: string) {
+    return this.repo
+      .createQueryBuilder('n')
+      .leftJoin('n.trainer', 't')
+      .addSelect(['t.id', 't.name'])
+      .where('n.clientId = :clientId', { clientId })
+      .orderBy('n.createdAt', 'DESC')
+      .getMany();
+  
   }
 
 }

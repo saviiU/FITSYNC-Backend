@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TrainersService } from './trainers.service';
 import { CreateTrainerProfileDto } from './dto/create-trainer-profile.dto';
 import { SearchTrainersDto } from './dto/search-trainers.dto';
+import { UpdateTrainerProfileDto } from './dto/update-trainer-profile.dto';
 
 @ApiTags('trainers')
 @Controller('trainers')
@@ -24,5 +25,14 @@ export class TrainersController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.trainersService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('userId') userId: string,
+    @Body() dto: UpdateTrainerProfileDto,
+  ) {
+    return this.trainersService.update(id, userId, dto);
   }
 }

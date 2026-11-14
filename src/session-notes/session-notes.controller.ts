@@ -27,4 +27,9 @@ export class SessionNotesController {
   progress(@Param('clientId') clientId: string) {
     return this.service.findByClient(clientId);
   }
+
+  @Get('trainer/:trainerId/clients')
+  clients(@Param('trainerId') trainerId: string) {
+    return this.service.findClientsByTrainer(trainerId);
+  }
 }

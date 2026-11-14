@@ -50,6 +50,9 @@ export class TrainerProfile {
     @Column({ type: 'int', default: 0 })
     reviewCount: number;
 
+    @Column({ type: 'text', nullable: true })
+    photoUrl: string;
+
 
     @CreateDateColumn()
     createdAt: Date;

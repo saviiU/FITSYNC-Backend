@@ -1,8 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TrainerProfile } from './trainer-profile.entity';
 import { CreateTrainerProfileDto } from './dto/create-trainer-profile.dto';
+import { UpdateTrainerProfileDto } from './dto/update-trainer-profile.dto';
 import { SearchTrainersDto } from './dto/search-trainers.dto';
 
 @Injectable()
@@ -18,24 +24,26 @@ export class TrainersService {
     return this.repo.save(this.repo.create({ ...dto, userId }));
   }
 
-  async search(q: SearchTrainersDto) {
-    const { specialization, location, minRating, maxFee, sortBy, page = 1, limit = 10 } = q;
+  async search(query: SearchTrainersDto) {
+    const { q, specialization, location, minRating, maxFee, sortBy, page = 1, limit = 10 } = query;
 
     const qb = this.repo
       .createQueryBuilder('t')
+      .leftJoin('t.user', 'u')
+      .addSelect(['u.id', 'u.name'])
       .where('t.isVerified = :verified', { verified: true });
 
+    if (q) qb.andWhere('(u.name ILIKE :q OR t.specialization ILIKE :q)', { q: `%${q}%` });
     if (specialization) qb.andWhere('t.specialization ILIKE :s', { s: `%${specialization}%` });
     if (location) qb.andWhere('t.location ILIKE :l', { l: `%${location}%` });
     if (minRating !== undefined) qb.andWhere('t.averageRating >= :r', { r: minRating });
     if (maxFee !== undefined) qb.andWhere('t.sessionFee <= :f', { f: maxFee });
 
     const sortColumns: Record<'rating' | 'fee' | 'experience', string> = {
-     rating: 't.averageRating',
-     fee: 't.sessionFee',
-     experience: 't.experienceYears',
+      rating: 't.averageRating',
+      fee: 't.sessionFee',
+      experience: 't.experienceYears',
     };
-    
     const key: 'rating' | 'fee' | 'experience' = sortBy ?? 'rating';
     qb.orderBy(sortColumns[key], key === 'fee' ? 'ASC' : 'DESC');
 
@@ -48,5 +56,15 @@ export class TrainersService {
     const profile = await this.repo.findOne({ where: { id, isVerified: true } });
     if (!profile) throw new NotFoundException('Trainer not found');
     return profile;
+  }
+
+  async update(id: number, userId: string, dto: UpdateTrainerProfileDto) {
+    const profile = await this.repo.findOne({ where: { id } });
+    if (!profile) throw new NotFoundException('Trainer not found');
+    if (profile.userId !== userId) {
+      throw new ForbiddenException('You can only edit your own profile');
+    }
+    Object.assign(profile, dto);
+    return this.repo.save(profile);
   }
 }

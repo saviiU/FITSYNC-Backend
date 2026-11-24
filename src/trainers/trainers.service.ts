@@ -53,9 +53,13 @@ export class TrainersService {
   }
 
   async findOne(id: number) {
-    const profile = await this.repo.findOne({ where: { id, isVerified: true } });
+    const profile = await this.repo.findOne({
+      where: { id, isVerified: true },
+      relations: { user: true },
+    });
     if (!profile) throw new NotFoundException('Trainer not found');
-    return profile;
+    const { user, ...rest } = profile;
+    return { ...rest, user: { id: user.id, name: user.name } };
   }
 
   async update(id: number, userId: string, dto: UpdateTrainerProfileDto) {

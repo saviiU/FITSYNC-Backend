@@ -32,4 +32,9 @@ export class SessionNotesController {
   clients(@Param('trainerId') trainerId: string) {
     return this.service.findClientsByTrainer(trainerId);
   }
+
+  @Get('client/:clientId/summary')
+  summary(@Param('clientId') clientId: string) {
+    return this.service.weeklySummary(clientId);
+  }
 }

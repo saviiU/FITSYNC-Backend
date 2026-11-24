@@ -1,3 +1,4 @@
+import { ReviewsModule } from './reviews/reviews.module';
 import { TrainersModule } from './trainers/trainers.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { SessionNotesModule } from './session-notes/session-notes.module';
+
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { SessionNotesModule } from './session-notes/session-notes.module';
     UsersModule,
     TrainersModule,
     SessionNotesModule,
+    ReviewsModule,
     
   ],
   controllers: [AppController],

@@ -91,4 +91,26 @@ export class SessionNotesService {
     });
   } 
 
+    async weeklySummary(clientId: string) {
+    const notes = await this.repo.find({ where: { clientId } });
+    const since = Date.now() - WEEK_MS;
+    const recent = notes.filter((n) => n.createdAt.getTime() >= since);
+
+    const weeks = new Set(notes.map((n) => Math.floor(n.createdAt.getTime() / WEEK_MS)));
+    const thisWeek = Math.floor(Date.now() / WEEK_MS);
+    let streakWeeks = 0;
+    let w = weeks.has(thisWeek) ? thisWeek : thisWeek - 1;
+    while (weeks.has(w)) {
+      streakWeeks++;
+      w--;
+    }
+
+    return {
+      workoutsThisWeek: recent.length,
+      weeklyTarget: 4,
+      minutesActive: recent.reduce((sum, n) => sum + (n.durationMin ?? 0), 0),
+      streakWeeks,
+    };
+  }
+
 }

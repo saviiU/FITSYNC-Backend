@@ -21,7 +21,7 @@ export class TrainersService {
   async create(userId: string, dto: CreateTrainerProfileDto) {
     const existing = await this.repo.findOne({ where: { userId } });
     if (existing) throw new ConflictException('Trainer profile already exists');
-    return this.repo.save(this.repo.create({ ...dto, userId }));
+    return this.repo.save(this.repo.create(Object.assign({}, dto, { userId })));
   }
 
   async search(query: SearchTrainersDto) {

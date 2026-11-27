@@ -16,7 +16,7 @@ export class SessionNotesService {
     ) {}
 
     create(trainerId: string, dto: CreateSessionNoteDto) {
-        return this.repo.save(this.repo.create({ ...dto, trainerId }));
+      return this.repo.save(this.repo.create(Object.assign({}, dto, { trainerId })));
 
     }
 
